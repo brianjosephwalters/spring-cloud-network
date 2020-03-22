@@ -1,0 +1,51 @@
+version: '3'
+services:
+  backend-one:
+    image: backend-one:latest
+    container_name: backend-one
+    ports:
+      - "9001:9001"
+    depends_on:
+      - eureka
+
+  backend-two:
+    image: backend-two:latest
+    container_name: backend-two
+    ports:
+      - "9002:9002"
+    depends_on:
+      - eureka
+
+  gateway:
+    image: gateway:latest
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - uaa
+
+  eureka:
+    image: eureka:latest
+    container_name: eureka
+
+  postgres:
+    image: docker-postgres:latest
+    build:
+      context: ./postgres
+      dockerfile: postgres.Dockerfile
+    container_name: docker-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    networks:
+      - docker-network
+
+  uaa:
+    image: uaa-service:latest
+    container_name: uaa-service
+    expose:
+      - "8090"
+    ports:
+      - "8090:8090"
